@@ -1,10 +1,7 @@
-# Cleaning Data from Experiment with Samsung's phone
-#### Github Repo, get.clean.data-Project
-#### Coursera, Johns Hopkins
-#### Data Science (Jeff, Roger, Brian)
-#### Getting and Cleaning Data
-#### Experiment, UCI Machine Learning Repository, Jorge, Davide, Alessandro, Luca, Xavier
-##### by Diego, February 2015
+# Project with Data from Experiment with Samsung's phone
+#### Coursera %>% Johns Hopkins %>% Data Science (Jeff, Roger, Brian) %>% Getting and Cleaning Data (Jeff)
+#### UCI M.L. Repo, Experiment by Jorge, Davide, Alessandro, Luca, Xavier
+##### get.clean.data-Project, Diego, February 2015
 
 
 
