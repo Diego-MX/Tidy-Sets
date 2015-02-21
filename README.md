@@ -4,9 +4,9 @@
 ###### February 2015, get.clean.data-Project, Diego from Mexico
 
 ### Step 0. Set-up the workbench.
-When running in `iteractive` mode, I've included some interaction with the user.  At first this was to get the working directory, but then I wanted to include a kind-of-funny greeting. 
+When running in `iteractive` mode, I've included some interaction with the user to determine whether we're at the right directory.
 
-The double question marks are intentional, for fun maybe.  
+The double question marks are intentional. 
 
 The different R spacing and indentation are an old habit.  I plan to change in the future.  Thanks for understanding. 
 
