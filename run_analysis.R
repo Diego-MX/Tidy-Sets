@@ -28,6 +28,8 @@ if(interactive())
     }
   }
 }
+# For some reason, R's traditional indentation format made 
+# me uncomfortable; so I change it.  My apologies. 
 
 if(!file.exists("./data/UCI HAR Dataset.zip"))
 { url = paste0("https://d396qusza40orc.cloudfront.net",
