@@ -1,33 +1,32 @@
 ## Project with Data from Experiment with Samsung's phone
 ###### Coursera > Johns Hopkins > Data Science (*Jeff*, Roger, Brian) > Getting and Cleaning Data
 ###### UCI M.L. Repo, Experiment data by Jorge, Davide, Alessandro, Luca, Xavier
-###### February 2015, get.clean.data-Project, Diego from Mexico
+###### April 2015, Tidy-Sets, Diego from Mexico
 
 This is a class project from Coursera.  We are to download experiment data from a website and follow the guidelines.  In this document I include comments about the script `run_analysis.R`.  
 
-The order which I've followed in the script corresponds to the requirements from the guidelines, and doesn't necessarily optimize computer resources. 
-
-I use double question marks for questions, if any, and a compact style of coding for `R`.  I apologise in advance.
+I refer to the numbering instructions as steps.  For coding flow I switched the steps 3 and 4. 
 
 #### Step 0. Set-up the workbench
-When running in `iteractive` mode, I've included interaction with the user to determine whether we're at the right directory.  Then we download and unzip if it hasn't already been done that. 
+When running in `iteractive` mode, I've included interaction with the user in order to acknowledge work from other people.  I ask about the working directory and download data if necessary.
 
 #### Step 1. Merge data
-To merge, we rowbind the datasets obtained in the corresponding folders `train` and `test`.
+To merge, we rowbind the datasets obtained in the corresponding folders `train` and `test`.  That is for each labeled `X`, `y` or `subject`.  We assume the observations across such files correspond between each other. 
 
 #### Step 2. Mean and Standard Deviation
-Use `grep` function to find `'mean'` and `'std'` text in features, and *select* those from the column indices. 
-
-#### Step 3. Activity Names
-Activity names are found from the `y` text files according to the keys in `activity_labels.txt`.  To get those we row bind the `y` files, and we *join* the corresponding column.
+Use `grep` function to find `'mean'` and `'std'` text in features, and subset-select those from the column indices. 
 
 #### Step 4. Variable Labels
-Variable labels were found from the `features` text file.  Since we had selected columns during the import, we must filter the corresponding idices as well. 
+Havig selected the indicated columns, we import the `features` text file and match the corresponding names to the columns. 
 
-#### Step 5. Averages
-We must first get the data corresponding to the subject.  Then we add a corresponding column as we did with activities.  
+#### Step 3. Activity Names
+Activity names are found from the `y` text files according to the keys in `activity_labels.txt`.  We do a "left join" to add the labels, with care as to how to name the by variables.  The subsetting operation is needed for compatibility within the data frames. 
 
+#### Step 5. Subject and Averages
+We add the subject column to the data, and then we summarize based on functions from `dplyr` package. 
 
+#### Step 6. Writing
+Use `write.table()` as instructed.
 
 
 
