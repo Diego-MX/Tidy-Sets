@@ -1,111 +1,100 @@
 # Diego-MX, February 2015.
+# Modified on April 2015
 
 # ==============================================================
 ## STEP 0.  Define directory and download data.
 
-library(ddply)
+library(dplyr)
 
-if(interactive()){
-    cat(paste0("Hey, this is the script that completes the ",
-        "project for Coursera's Getting and Cleaning Data.\n",
-        "Diego thanks Jeff and sends regards from Mexico."))
-    guest <- readline("...¿Your name?... ")
-    isWork <- readline(paste0("Mmph, whatever. ¿Are we in the ",
-        "working directory now?  Y/n... "))
+if(interactive())
+{ cat(paste0("Hey, this is the script that completes the ",
+    "project for Coursera's Getting and Cleaning Data.\n",
+    "Diego thanks Jeff and sends regards from Mexico."))
+  guest  <- readline("...¿Your name?... ")
+  isWork <- readline(paste0("Mmph, whatever. ¿Are we in the ",
+    "working directory now?  Y/n... "))
 
-    if(tolower(isWork) != 'n'){
-      cat("Mmph.  Now back to business.")
-    }else{
-      isDiego <- readline(paste0("¿Do we go to the standard ",
-        "directory?  Y/n... "))
-      if(tolower(isDiego) == "n"){
-        stop("Ugh. Then where?  Figure it out, will you?")
-      }else{
-        workdir <- paste0("~/Sync/Dropbox/R/Coursera/",
-          "3 Cleaning Data/Project-get.clean.data/")
-        setwd(workdir)}}
-}#EndInteractiveIf
+  if(tolower(isWork) != 'n')
+  { cat("Mmph.  Now back to business.")
+  } else
+  { toStandard <- readline(paste0("¿Do we go to the standard ",
+      "directory?  Y/n... "))
 
+    if(tolower(toStandard) == "n")
+    { stop("Ugh. Then where?  Figure it out, will you?")
+    } else
+    { setwd(paste0("~/Sync/Dropbox/R/Coursera/",
+        "3 Cleaning Data/Tidy Sets/"))
+    }
+  }
+}
 
-if(!file.exists("Samsung.zip")){
-    url = paste0("https://d396qusza40orc.cloudfront.net",
-        "/getdata%2Fprojectfiles%2FUCI%20HAR%20Dataset.zip")
-    download.file(url, "Samsung.zip", method='curl')}
-
-if(!file.exists("UCI HAR Dataset")){
-    unzip("Samsung.zip")}
-
-setwd("UCI HAR Dataset")
+if(!file.exists("./data/UCI HAR Dataset.zip"))
+{ url = paste0("https://d396qusza40orc.cloudfront.net",
+    "/getdata%2Fprojectfiles%2FUCI%20HAR%20Dataset.zip")
+  download.file(url, "./data/UCI HAR Dataset.zip",
+    method='curl')
+}
+if(!file.exists("./data/UCI HAR Dataset"))
+{ unzip("./data/UCI HAR Dataset.zip", exdir="./data")
+  system("mv ./data/UCI\\ HAR\\ Dataset/* ./data/")
+}
 
 
 # ==============================================================
 # Step 1.  Merge data
 
-data <- data.frame()
-types <- c("test", "train")
-for(tp in types){
-    setwd(tp)
-    Xfile <- sprintf("X_%s.txt", tp)
-    X <- read.table(Xfile, colClasses="numeric", nrows=10000)
-    data <- rbind(data, X)
-    setwd("../")}
+X <- y <- subject <- data_frame()
+for(tp in c("test", "train")) for(var in c("X", "y", "subject"))
+{ varFile <- sprintf("./data/%1$s/%2$s_%1$s.txt", tp, var)
+
+  var_ <- read.table(varFile, quote="", nrows=9000,
+    comment.char="")
+  eval(parse(text=sprintf("%1$s <- rbind(%1$s, var_)", var)))
+}
 
 
 # ==============================================================
-# Step 2.  Mean and Standard Deviation
+# Step 2. Mean and Standard Deviation
 
-features <- read.table("features.txt", row.names=1,
-    col.names=c("ft_id", "feat"), nrows=600, stringsAsFactors=F)
+features <- read.table("./data/features.txt",
+  col.names=c("feat_id", "feat_name"), stringsAsFactors=F)
 
-meanInd <- grep('mean\\(\\)', features$feat, ignore.case=T)
-stdInd  <- grep('std\\(\\)',  features$feat, ignore.case=T)
-indices <- sort(c(meanInd, stdInd))
-
-data <- data[indices]
-
-
-# ==============================================================
-# Step 3. Activity names.
-
-activities <- read.table("activity_labels.txt", row.names=1,
-    col.names=c("id", "activity"), nrows=10)
-
-actvty <- data.frame()
-types <- c("test", "train")
-for(tp in types){
-    setwd(tp)
-    yfile <- sprintf("y_%s.txt", tp)
-    y <- read.table(yfile, colClasses="integer", nrows=10000,
-        col.names="act_id")
-    actvty <- rbind(actvty, y)
-    setwd("../")}
-
-data$activity <- activities$activity[actvty$act_id]
-# Wow! what a line!
+X <- X[grepl('(mean|std)\\(\\)', features$feat_name)]
 
 
 # ==============================================================
 # Step 4. Variable Labels
 
-# Create auxiliary variable LABELS because of the added columns.
-labels <- colnames(data)
-labels[1:length(indices)] <- features$feat[indices]
-colnames(data) <- labels
+Xindices <- as.integer(sub("V", "", names(X)))
+names(X) <- features$feat_name[Xindices]
 
 
 # ==============================================================
-# Step 5. Averages.
+# Step 3. Activity names.
 
-subject <- data.frame()
-types <- c("test", "train")
-for(tp in types){
-    setwd(tp)
-    sbjfile <- sprintf("subject_%s.txt", tp)
-    sbj <- read.table(sbjfile, colClasses="integer",
-        nrows=10000, col.names="sbj_id")
-    subject <- rbind(subject, sbj)
-    setwd("../")}
+activities <- read.table("./data/activity_labels.txt",
+  col.names=c("act_id", "activity"))
 
-data$subject <- subject$sbj_id
+names(y) <- "act_id" # Rename for the left_join to be automatic
+X$activity <- left_join(y, activities, by=c("V1"="act_id")) %>%
+  '[['("activity")
 
-averages <- ddply(data, .(activity, subject), colwise(mean))
+
+# ==============================================================
+# Step 5. Subjects and averages.
+
+X$subject <- subject$V1
+averages  <- group_by(X, activity, subject) %>%
+  summarise_each(funs(mean))
+
+
+# ==============================================================
+# Step 6. Later instructions.
+
+write.table(averages, "./averages.txt", row.name=F)
+
+
+
+
+
