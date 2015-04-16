@@ -20,7 +20,7 @@ Use `grep` function to find `'mean'` and `'std'` text in features, and subset-se
 Havig selected the indicated columns, we import the `features` text file and match the corresponding names to the columns. 
 
 #### Step 3. Activity Names
-Activity names are found from the `y` text files according to the keys in `activity_labels.txt`.  We do a *left join* to add the labels, with care as to how to name the by variables.  The subsetting operation is needed for compatibility within the data frames. 
+Activity names are found from the `y` text files according to the keys in `activity_labels.txt`.  We do a *left join* to add the labels, with care as to how to name the `by` variables.  The subsetting operation is needed for compatibility within the data frames. 
 
 #### Step 5. Subject and Averages
 We add the subject column to the data, and then we summarize based on functions from `dplyr` package. 
